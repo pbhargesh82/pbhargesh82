@@ -1,4 +1,4 @@
-- 👋 Hi, I’m Bhargesh Patel
+- 👋 Hi, I’m Bhargesh Patel.
 - 👀 I’m interested in Web devlopment
 - 🌱 I’m currently learning angular/node.js
 - 📫 How to reach me pbhargesh82@aol.com
