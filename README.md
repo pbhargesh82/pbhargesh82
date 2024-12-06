@@ -9,7 +9,7 @@
 
 - 📫 How to reach me **pbhargesh82@gmail.com**
 
-- 📄 Know about my experiences [https://storage.rxresu.me/clp9fxhim7tzy9hun0at8acyl/resumes/Bhargesh Patel.pdf](https://storage.rxresu.me/clp9fxhim7tzy9hun0at8acyl/resumes/Bhargesh Patel.pdf)
+- 📄 Know about my experiences  [https://rxresu.me/pbhargesh82/bhargesh-patel](https://rxresu.me/pbhargesh82/bhargesh-patel)
 
 - ⚡ Fun fact **"Just a developer navigating the bugs of life, one commit at a time."**
 
