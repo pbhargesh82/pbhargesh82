@@ -1,15 +1,15 @@
 <h1 align="center">Hi 👋, I'm Bhagresh Patel</h1>
 <h3 align="center">A passionate frontend developer from India</h3>
 
-<a href="https://app.daily.dev/pbhargesh82"><img src="https://api.daily.dev/devcards/v2/fhZDBfLSnQ0B5hrvSzZ1T.png?type=wide&r=cen" width="652" alt="Bhargesh Patel's Dev Card"/></a>
+<a href="https://app.daily.dev/pbhargesh82" target="_blank"><img src="https://api.daily.dev/devcards/v2/fhZDBfLSnQ0B5hrvSzZ1T.png?type=wide&r=cen" width="652" alt="Bhargesh Patel's Dev Card"/></a>
 
 - 🌱 I’m currently learning **Svelte**
 
-- 👨‍💻 All of my projects are available at [https://pbhargesh82.netlify.app/home](https://pbhargesh82.netlify.app/home)
+- 👨‍💻 All of my projects are available at <a href="https://pbhargesh82.netlify.app/home" target="_blank">https://pbhargesh82.netlify.app/home</a>
 
 - 📫 How to reach me **pbhargesh82@gmail.com**
 
-- 📄 Know about my experiences  [https://rxresu.me/pbhargesh82/bhargesh-patel](https://rxresu.me/pbhargesh82/bhargesh-patel)
+- 📄 Know about my experiences <a href="https://rxresu.me/pbhargesh82/bhargesh-patel" target="_blank">https://rxresu.me/pbhargesh82/bhargesh-patel</a>
 
 - ⚡ Fun fact **"Just a developer navigating the bugs of life, one commit at a time."**
 
