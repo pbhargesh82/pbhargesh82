@@ -9,7 +9,7 @@
 
 - 📫 How to reach me **pbhargesh82@gmail.com**
 
-- 📄 Know about my experiences [https://pbhargesh82.netlify.app/home](https://pbhargesh82.netlify.app/home)
+- 📄 Know about my experiences [https://storage.rxresu.me/clp9fxhim7tzy9hun0at8acyl/resumes/Bhargesh Patel.pdf](https://storage.rxresu.me/clp9fxhim7tzy9hun0at8acyl/resumes/Bhargesh Patel.pdf)
 
 - ⚡ Fun fact **"Just a developer navigating the bugs of life, one commit at a time."**
 
