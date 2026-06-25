@@ -96,12 +96,7 @@
 ### GitHub stats
 
 <p align="center">
-  <img height="180em" src="https://github-readme-stats.vercel.app/api?username=pbhargesh82&show_icons=true&count_private=true&hide_border=true&include_all_commits=true" alt="Bhargesh's GitHub stats" />
   <img height="180em" src="https://github-readme-stats.vercel.app/api/top-langs/?username=pbhargesh82&layout=compact&hide_border=true&langs_count=8" alt="Top languages" />
-</p>
-
-<p align="center">
-  <img src="https://github-readme-streak-stats.herokuapp.com/?user=pbhargesh82&hide_border=true" alt="GitHub streak" />
 </p>
 
 ---
