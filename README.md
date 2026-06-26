@@ -9,7 +9,7 @@
 <p align="center">Surat, India · Remote · Open to contract &amp; freelance work</p>
 
 <p align="center">
-  <a href="https://pbhargesh82.netlify.app/home" target="_blank"><img src="https://img.shields.io/badge/Portfolio-0a0a0a?style=for-the-badge&logo=astro&logoColor=ffe600" alt="Portfolio" /></a>
+  <a href="https://bhargeshpatel.com" target="_blank"><img src="https://img.shields.io/badge/Portfolio-0a0a0a?style=for-the-badge&logo=astro&logoColor=ffe600" alt="Portfolio" /></a>
   <a href="https://www.linkedin.com/in/bhargesh-patel-2b6a111b9/" target="_blank"><img src="https://img.shields.io/badge/LinkedIn-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn" /></a>
   <a href="mailto:pbhargesh82@gmail.com"><img src="https://img.shields.io/badge/Email-EA4335?style=for-the-badge&logo=gmail&logoColor=white" alt="Email" /></a>
   <a href="https://rxresu.me/pbhargesh82/bhargesh-patel" target="_blank"><img src="https://img.shields.io/badge/R%C3%A9sum%C3%A9-22c55e?style=for-the-badge&logo=readdotcv&logoColor=white" alt="Résumé" /></a>
