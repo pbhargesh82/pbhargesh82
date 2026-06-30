@@ -1,0 +1,1049 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Icon from '../components/Icon.astro';
+import projects from '../content/projects.json';
+import experience from '../content/experience.json';
+import socials from '../content/socials.json';
+import stack from '../content/stack.json';
+import profile from '../content/profile.json';
+
+const github = socials.find((s) => s.name === 'GitHub');
+const linkedin = socials.find((s) => s.name === 'LinkedIn');
+const dailyDev = socials.find((s) => s.name === 'Daily Dev');
+const whatsapp = socials.find((s) => s.name === 'WhatsApp');
+const resume = socials.find((s) => s.name === 'Resume');
+const year = new Date().getFullYear();
+
+const current = experience.find((j) => j.current) ?? experience[0];
+const facts = [
+  { label: 'Experience', value: `${parseInt(profile.yearsExperience, 10)}+ years` },
+  { label: 'Now', value: `${current.title} · ${current.company}` },
+  { label: 'Based in', value: profile.location },
+  { label: 'Availability', value: profile.heroCard.availability },
+];
+
+const navLinks = [
+  { href: '#about', label: 'About' },
+  { href: '#stack', label: 'Stack' },
+  { href: '#work', label: 'Work' },
+  { href: '#experience', label: 'Experience' },
+];
+
+const footerSocials = [github, linkedin, dailyDev, whatsapp].filter(Boolean);
+---
+
+<BaseLayout title={profile.pageTitle} description={profile.pageDescription}>
+  <!-- Header -->
+  <header class="sticky top-0 z-40 border-b border-line bg-paper/90 backdrop-blur-md">
+    <nav class="mx-auto flex h-16 max-w-6xl items-center justify-between px-5 md:px-8">
+      <a class="font-mono text-base font-bold tracking-tight" href="#top">
+        bhargesh<span class="text-ink/60">.dev</span>
+      </a>
+
+      <div class="hidden items-center gap-1 md:flex">
+        {
+          navLinks.map((link) => (
+            <a
+              class="rounded-md px-3 py-2 text-sm font-semibold text-muted transition-colors hover:text-ink"
+              href={link.href}
+            >
+              {link.label}
+            </a>
+          ))
+        }
+        <a
+          class="shadow-press shadow-press-accent ml-2 inline-flex items-center gap-2 border-2 border-ink bg-ink px-4 py-2 text-sm font-bold text-white brutal-shadow-accent"
+          href={resume?.url ?? '#'}
+          download={resume?.download}
+        >
+          Résumé
+          <Icon name="download" class="text-[18px]" />
+        </a>
+      </div>
+
+      <button
+        class="flex h-10 w-10 items-center justify-center md:hidden"
+        type="button"
+        id="menu-toggle"
+        aria-label="Open menu"
+        aria-expanded="false"
+        aria-controls="mobile-menu"
+      >
+        <Icon name="menu" class="text-3xl icon-menu" />
+        <Icon name="close" class="text-3xl icon-close hidden" />
+      </button>
+    </nav>
+
+    <!-- Mobile menu -->
+    <div class="hidden border-t border-line bg-paper md:hidden" id="mobile-menu">
+      <div class="flex flex-col px-5 py-3">
+        {
+          navLinks.map((link) => (
+            <a class="border-b border-line py-3 text-base font-semibold" href={link.href}>
+              {link.label}
+            </a>
+          ))
+        }
+        <a
+          class="mt-3 inline-flex items-center justify-center gap-2 border-2 border-ink bg-ink px-4 py-3 text-base font-bold text-white"
+          href={resume?.url ?? '#'}
+          download={resume?.download}
+        >
+          Download résumé
+          <Icon name="download" class="text-[18px]" />
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main id="top">
+    <!-- Hero -->
+    <section class="relative overflow-hidden" id="hero">
+      <div
+        class="mx-auto grid max-w-6xl items-center gap-12 px-5 py-16 md:grid-cols-12 md:px-8 md:py-24 lg:py-28"
+      >
+        <div class="md:col-span-7 lg:col-span-7">
+          <p class="mb-6 font-mono text-xs font-medium uppercase tracking-[0.18em] text-muted">
+            Software engineer · {profile.location}
+          </p>
+          <h1
+            class="text-balance text-5xl font-black leading-[0.98] tracking-tight sm:text-6xl lg:text-7xl"
+          >
+            Shipping code that <span class="mark">works.</span>
+          </h1>
+          <p class="mt-7 max-w-xl text-lg leading-relaxed text-muted">
+            {profile.heroBio}
+          </p>
+
+          <div class="mt-9 flex flex-wrap items-center gap-4">
+            <a
+              class="shadow-press shadow-press-accent inline-flex items-center gap-2 border-2 border-ink bg-ink px-7 py-3.5 text-base font-bold text-white brutal-shadow-accent"
+              href="#work"
+            >
+              View work
+              <Icon name="arrow_downward" class="text-[20px]" />
+            </a>
+            <a
+              class="shadow-press inline-flex items-center gap-2 border-2 border-ink bg-paper px-7 py-3.5 text-base font-bold text-ink brutal-shadow"
+              href="#contact"
+            >
+              Get in touch
+            </a>
+          </div>
+
+          <div class="mt-9 flex items-center gap-2.5 text-sm font-semibold text-muted">
+            <span class="relative flex h-2.5 w-2.5">
+              <span
+                class="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-500 opacity-75"
+              ></span>
+              <span class="relative inline-flex h-2.5 w-2.5 rounded-full bg-green-600"></span>
+            </span>
+            Available for contract &amp; freelance work
+          </div>
+        </div>
+
+        <!-- Brutalist signature: terminal card -->
+        <div class="md:col-span-5 lg:col-span-5">
+          <figure
+            class="brutal-border brutal-shadow bg-ink p-3 font-mono"
+            aria-label={`Status: ${profile.heroCard.status}. Focus: ${profile.heroCard.focus}. Open to ${profile.heroCard.availability}.`}
+          >
+            <div class="flex items-center gap-2 px-2 py-2" aria-hidden="true">
+              <span class="h-3 w-3 rounded-full bg-[#ff5f56]"></span>
+              <span class="h-3 w-3 rounded-full bg-[#ffbd2e]"></span>
+              <span class="h-3 w-3 rounded-full bg-[#27c93f]"></span>
+              <span class="ml-2 text-xs text-white/60">{profile.socialPreview?.terminalPath ?? '~/portfolio'}</span>
+            </div>
+            <div class="space-y-2 p-3 text-[13px] leading-relaxed" aria-hidden="true" id="terminal-lines">
+              <p class="text-white/60" data-line="cmd">$ whoami</p>
+              <p class="text-accent" data-line="out"><a href={resume?.url ?? '#'} download={resume?.download} class="no-underline transition-colors hover:text-white" tabindex="-1">{profile.socialPreview?.whoami ?? 'bhargesh — full-stack engineer'}</a></p>
+              <p class="text-white/60" data-line="cmd">$ cat status.json</p>
+              <p class="text-white" data-line="out">
+                {'{'}<br />
+                <span class="pl-4 text-white/70">"status":</span> <a href="#contact" class="text-accent no-underline transition-colors hover:text-white" tabindex="-1"
+                  >"{profile.heroCard.status.toLowerCase()}"</a
+                >,<br />
+                <span class="pl-4 text-white/70">"focus":</span> <span class="text-white"
+                  >"{profile.heroCard.focus.toLowerCase()}"</span
+                >,<br />
+                <span class="pl-4 text-white/70">"open_to":</span> <span class="text-white"
+                  >"{profile.heroCard.availability.toLowerCase()}"</span
+                ><br />
+                {'}'}
+              </p>
+              <p class="text-white/60" data-line="out">$ <span class="term-prompt-cursor">▋</span></p>
+            </div>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <!-- Marquee -->
+    <div class="border-y border-ink bg-ink py-3 text-white" aria-label="Highlights">
+      <div class="marquee">
+        <div class="marquee-track">
+          {
+            [false, true].map((hidden) => (
+              <div class="marquee-group" aria-hidden={hidden}>
+                {Array.from({ length: 3 })
+                  .flatMap(() => profile.marquee)
+                  .map((phrase) => (
+                    <>
+                      <span class="marquee-item">{phrase}</span>
+                      <span class="marquee-sep" aria-hidden="true">
+                        /
+                      </span>
+                    </>
+                  ))}
+              </div>
+            ))
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- About -->
+    <section class="border-b border-line py-20 md:py-28" id="about">
+      <div class="mx-auto max-w-6xl px-5 md:px-8">
+        <div class="grid gap-14 lg:grid-cols-12">
+          <div class="reveal lg:col-span-5">
+            <p class="mb-4 font-mono text-xs font-medium uppercase tracking-[0.18em] text-muted">
+              About
+            </p>
+            <h2 class="text-balance text-3xl font-extrabold tracking-tight sm:text-4xl">
+              I own features end to end — UI, API, and data.
+            </h2>
+          </div>
+          <div class="reveal space-y-6 text-lg leading-relaxed text-muted lg:col-span-7">
+            {profile.manifesto.map((para) => <p>{para}</p>)}
+          </div>
+        </div>
+
+        <dl class="reveal mt-16 grid grid-cols-2 gap-px overflow-hidden border border-line bg-line lg:grid-cols-4">
+          {
+            facts.map((fact) => (
+              <div class="bg-paper p-5 transition-colors duration-150 hover:bg-accent md:p-6">
+                <dt class="font-mono text-xs uppercase tracking-[0.14em] text-muted">
+                  {fact.label}
+                </dt>
+                <dd class="mt-2 text-base font-bold leading-snug tracking-tight md:text-lg">
+                  {fact.value}
+                </dd>
+              </div>
+            ))
+          }
+        </dl>
+
+        <dl class="reveal mt-px grid grid-cols-2 gap-px overflow-hidden border border-t-0 border-line bg-ink lg:grid-cols-4">
+          {
+            profile.stats.map((stat) => (
+              <div class="bg-ink p-5 text-white transition-colors duration-150 hover:bg-ink/80 md:p-6">
+                <dd class="text-3xl font-black tracking-tight text-accent md:text-4xl">
+                  {stat.value}
+                </dd>
+                <dt class="mt-1 font-mono text-xs uppercase tracking-[0.14em] text-white/55">
+                  {stat.label}
+                </dt>
+              </div>
+            ))
+          }
+        </dl>
+      </div>
+    </section>
+
+    <!-- Stack -->
+    <section class="border-b border-line bg-surface py-20 md:py-28" id="stack">
+      <div class="mx-auto max-w-6xl px-5 md:px-8">
+        <div class="reveal mb-12">
+          <p class="mb-4 font-mono text-xs font-medium uppercase tracking-[0.18em] text-muted">
+            Stack
+          </p>
+          <h2 class="text-balance text-3xl font-extrabold tracking-tight sm:text-4xl">
+            Tools I build with.
+          </h2>
+        </div>
+        <div class="grid gap-10 md:grid-cols-2">
+          <div class="reveal">
+            <h3 class="mb-5 font-mono text-sm font-bold uppercase tracking-wide text-muted">
+              Frontend
+            </h3>
+            <div class="flex flex-wrap gap-3">
+              {
+                stack.frontend.map((tool) => (
+                  <span class="border-2 border-ink bg-paper px-4 py-2 text-base font-bold cursor-default transition-all duration-150 hover:bg-ink hover:text-accent hover:-translate-y-0.5">
+                    {tool.name}
+                  </span>
+                ))
+              }
+            </div>
+          </div>
+          <div class="reveal">
+            <h3 class="mb-5 font-mono text-sm font-bold uppercase tracking-wide text-muted">
+              Backend &amp; Data
+            </h3>
+            <div class="flex flex-wrap gap-3">
+              {
+                stack.backend.map((tool) => (
+                  <span class="border-2 border-ink bg-paper px-4 py-2 text-base font-bold cursor-default transition-all duration-150 hover:bg-ink hover:text-accent hover:-translate-y-0.5">
+                    {tool.name}
+                  </span>
+                ))
+              }
+            </div>
+          </div>
+        </div>
+        <div class="reveal mt-10">
+          <h3 class="mb-5 font-mono text-sm font-bold uppercase tracking-wide text-muted">
+            AI &amp; Tooling
+          </h3>
+          <div class="flex flex-wrap gap-3">
+            {
+              stack.ai.map((tool) => (
+                <span class="border-2 border-ink bg-paper px-4 py-2 text-base font-bold cursor-default transition-all duration-150 hover:bg-ink hover:text-accent hover:-translate-y-0.5">
+                  {tool.name}
+                </span>
+              ))
+            }
+          </div>
+          <p class="mt-4 text-sm text-muted">
+            I build with AI in the loop — from code generation to production features.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Work -->
+    <section class="border-b border-line py-20 md:py-28" id="work">
+      <div class="mx-auto max-w-6xl px-5 md:px-8">
+        <div class="reveal mb-12 flex flex-col justify-between gap-6 md:flex-row md:items-end">
+          <div>
+            <p class="mb-4 font-mono text-xs font-medium uppercase tracking-[0.18em] text-muted">
+              Selected work
+            </p>
+            <h2 class="text-balance text-3xl font-extrabold tracking-tight sm:text-4xl">
+              Things I’ve shipped.
+            </h2>
+          </div>
+          <a
+            class="inline-flex items-center gap-2 text-base font-bold text-ink underline decoration-2 underline-offset-4 transition-colors hover:text-muted"
+            href={github?.url ?? '#'}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            More on GitHub
+            <Icon name="north_east" class="text-[20px]" />
+          </a>
+        </div>
+
+        <div class="grid gap-8 md:grid-cols-2">
+          {
+            projects.map((project, index) => (
+              <article
+                class={`reveal group flex flex-col overflow-hidden border-2 border-ink bg-paper brutal-shadow shadow-press${project.caseStudy ? ' cursor-pointer' : ''}`}
+                data-project-id={project.caseStudy ? project.id : undefined}
+              >
+                {project.caseStudy ? (
+                  <div class="flex items-center justify-between gap-3 border-b-2 border-ink bg-ink px-6 py-3">
+                    <span class="font-mono text-xs font-bold uppercase tracking-[0.14em] text-accent">
+                      Case study
+                    </span>
+                    <span class="font-mono text-[11px] font-medium uppercase tracking-wide text-white/55">
+                      {project.context}
+                    </span>
+                  </div>
+                ) : (
+                  <a
+                    href={project.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="block aspect-[16/10] overflow-hidden border-b-2 border-ink bg-surface"
+                  >
+                    <img
+                      class="h-full w-full object-cover object-top transition-transform duration-500 group-hover:scale-[1.03]"
+                      src={project.thumbnail}
+                      alt={project.thumbnailAlt}
+                      width={640}
+                      height={400}
+                      loading={index === 0 ? 'eager' : 'lazy'}
+                      decoding="async"
+                    />
+                  </a>
+                )}
+                <div class="flex flex-1 flex-col p-6">
+                  <h3 class="text-2xl font-extrabold tracking-tight">{project.name}</h3>
+                  <p class="mt-3 flex-1 text-base leading-relaxed text-muted">
+                    {project.description}
+                  </p>
+                  <div class="mt-5 flex flex-wrap gap-2">
+                    {project.stack.map((tech) => (
+                      <span class="font-mono text-xs font-medium text-muted">#{tech}</span>
+                    ))}
+                  </div>
+                  {project.caseStudy ? (
+                    <div class="mt-6 flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-line pt-5">
+                      <button type="button" class="inline-flex items-center gap-1.5 text-sm font-bold text-ink group-hover:underline" data-open-case-study>
+                        Read case study
+                        <Icon name="arrow_forward" class="text-[18px]" />
+                      </button>
+                    </div>
+                  ) : (
+                    <div class="mt-6 flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-line pt-5">
+                      <a
+                        class="inline-flex items-center gap-1.5 text-sm font-bold hover:underline"
+                        href={project.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        Live demo
+                        <Icon name="north_east" class="text-[18px]" />
+                      </a>
+                      <a
+                        class="inline-flex items-center gap-1.5 text-sm font-bold text-muted hover:text-ink"
+                        href={project.uiRepoUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        Code
+                        <Icon name="code" class="text-[18px]" />
+                      </a>
+                    </div>
+                  )}
+                </div>
+              </article>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    <!-- Experience -->
+    <section class="border-b border-line bg-surface py-20 md:py-28" id="experience">
+      <div class="mx-auto max-w-6xl px-5 md:px-8">
+        <div class="reveal mb-12">
+          <p class="mb-4 font-mono text-xs font-medium uppercase tracking-[0.18em] text-muted">
+            Experience
+          </p>
+          <h2 class="text-balance text-3xl font-extrabold tracking-tight sm:text-4xl">
+            Five years, three teams.
+          </h2>
+        </div>
+
+        <div class="border-t border-line">
+          {
+            experience.map((job) => (
+              <div class="reveal grid gap-2 border-b border-line py-8 md:grid-cols-12 md:gap-6">
+                <div class="md:col-span-3">
+                  <div class="font-mono text-sm font-medium text-muted">{job.period}</div>
+                  {job.current && (
+                    <span class="mt-2 inline-block bg-accent px-2 py-0.5 font-mono text-[11px] font-bold uppercase tracking-wide text-ink">
+                      Current
+                    </span>
+                  )}
+                </div>
+                <div class="md:col-span-9">
+                  <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                    <h3 class="text-xl font-extrabold tracking-tight">{job.title}</h3>
+                    <span class="text-lg font-bold text-muted">· {job.company}</span>
+                  </div>
+                  <div class="mt-1 font-mono text-xs font-medium uppercase tracking-wide text-muted">
+                    {job.type} · {job.duration}
+                  </div>
+                  <p class="mt-3 max-w-2xl text-base leading-relaxed text-muted">{job.summary}</p>
+                </div>
+              </div>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    <!-- Contact -->
+    <section class="py-20 md:py-28" id="contact">
+      <div class="mx-auto max-w-6xl px-5 md:px-8">
+        <div class="grid gap-14 lg:grid-cols-12">
+          <div class="reveal lg:col-span-5">
+            <p class="mb-4 font-mono text-xs font-medium uppercase tracking-[0.18em] text-muted">
+              Contact
+            </p>
+            <h2 class="text-balance text-4xl font-black tracking-tight sm:text-5xl">
+              Let’s build something.
+            </h2>
+            <p class="mt-6 max-w-md text-lg leading-relaxed text-muted">
+              {profile.contactBody}
+            </p>
+
+            <div class="mt-10 space-y-5">
+              <a
+                class="group flex items-center gap-4"
+                href={`mailto:${profile.email}`}
+              >
+                <span
+                  class="flex h-12 w-12 shrink-0 items-center justify-center border-2 border-ink bg-paper"
+                >
+                  <Icon name="mail" />
+                </span>
+                <span>
+                  <span class="block font-mono text-xs uppercase tracking-wide text-muted">Email</span>
+                  <span class="text-lg font-bold group-hover:underline">{profile.email}</span>
+                </span>
+              </a>
+              <div class="flex items-center gap-4">
+                <span
+                  class="flex h-12 w-12 shrink-0 items-center justify-center border-2 border-ink bg-paper"
+                >
+                  <Icon name="location_on" />
+                </span>
+                <span>
+                  <span class="block font-mono text-xs uppercase tracking-wide text-muted"
+                    >Location</span
+                  >
+                  <span class="text-lg font-bold">{profile.location}</span>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div class="reveal lg:col-span-7">
+            <form
+              class="border-2 border-ink bg-paper p-6 brutal-shadow md:p-8"
+              id="contact-form"
+              name="contact"
+              method="POST"
+              data-netlify="true"
+              netlify-honeypot="bot-field"
+            >
+              <input type="hidden" name="form-name" value="contact" />
+              <p class="hidden">
+                <label>Don’t fill this out: <input name="bot-field" /></label>
+              </p>
+              <div class="grid gap-6 sm:grid-cols-2">
+                <div>
+                  <label class="mb-2 block text-sm font-bold" for="name">Name</label>
+                  <input
+                    class="w-full border-2 border-ink bg-paper px-4 py-3 text-base font-medium placeholder:text-ink/35 focus:bg-accent/20 focus:outline-none"
+                    id="name"
+                    name="name"
+                    placeholder="Your name"
+                    type="text"
+                    required
+                  />
+                </div>
+                <div>
+                  <label class="mb-2 block text-sm font-bold" for="email">Email</label>
+                  <input
+                    class="w-full border-2 border-ink bg-paper px-4 py-3 text-base font-medium placeholder:text-ink/35 focus:bg-accent/20 focus:outline-none"
+                    id="email"
+                    name="email"
+                    placeholder="you@company.com"
+                    type="email"
+                    required
+                  />
+                </div>
+              </div>
+              <div class="mt-6">
+                <label class="mb-2 block text-sm font-bold" for="message">Message</label>
+                <textarea
+                  class="w-full border-2 border-ink bg-paper px-4 py-3 text-base font-medium placeholder:text-ink/35 focus:bg-accent/20 focus:outline-none"
+                  id="message"
+                  name="message"
+                  placeholder="Tell me about the project, timeline, and scope."
+                  rows="6"
+                  required></textarea>
+              </div>
+              <button
+                class="shadow-press shadow-press-accent mt-6 inline-flex w-full items-center justify-center gap-2 border-2 border-ink bg-ink px-7 py-4 text-base font-bold text-white brutal-shadow-accent sm:w-auto"
+                type="submit"
+              >
+                Send message
+                <Icon name="send" class="text-[20px]" />
+              </button>
+              <p class="mt-4 text-sm text-muted" id="form-error" hidden role="alert">
+                Something went wrong. Email me directly at
+                <a class="font-bold text-ink underline" href={`mailto:${profile.email}`}
+                  >{profile.email}</a
+                >.
+              </p>
+            </form>
+
+            <div
+              class="flex flex-col items-start justify-center border-2 border-ink bg-paper p-8 brutal-shadow md:p-10"
+              id="form-success"
+              hidden
+            >
+              <span
+                class="flex h-14 w-14 items-center justify-center border-2 border-ink bg-accent"
+              >
+                <Icon name="check" class="text-3xl" />
+              </span>
+              <h3 class="mt-6 text-2xl font-extrabold tracking-tight">Message sent.</h3>
+              <p class="mt-3 max-w-sm text-base leading-relaxed text-muted">
+                Thanks for reaching out — I’ll get back to you by email soon. For anything urgent,
+                <a class="font-bold text-ink underline" href={`mailto:${profile.email}`}
+                  >email me directly</a
+                >.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Case study modal -->
+    <dialog
+      id="case-study-modal"
+      class="m-0 h-full w-full max-w-none border-0 bg-transparent p-0 md:m-auto md:h-auto md:max-h-[85vh] md:w-full md:max-w-2xl md:p-4"
+      aria-label="Case study details"
+      data-projects={JSON.stringify(projects.filter(p => p.caseStudy))}
+    >
+      <div class="flex h-full flex-col bg-paper md:h-auto md:border-2 md:border-ink md:brutal-shadow">
+        <div class="flex items-center justify-between gap-3 border-b-2 border-ink bg-ink px-6 py-4">
+          <div>
+            <h3 id="modal-title" class="text-lg font-extrabold tracking-tight text-white"></h3>
+            <span id="modal-context" class="font-mono text-[11px] font-medium uppercase tracking-wide text-white/55"></span>
+          </div>
+          <button
+            id="modal-close"
+            class="flex h-10 w-10 shrink-0 items-center justify-center text-white/70 transition-colors hover:text-accent"
+            type="button"
+            aria-label="Close case study"
+          >
+            <Icon name="close" class="text-2xl" />
+          </button>
+        </div>
+        <div class="flex-1 overflow-y-auto p-6 md:p-8">
+          <p id="modal-problem" class="text-base leading-relaxed text-muted"></p>
+
+          <h4 class="mt-6 font-mono text-xs font-bold uppercase tracking-[0.14em] text-muted">My role</h4>
+          <p id="modal-role" class="mt-2 text-base leading-relaxed"></p>
+
+          <h4 class="mt-6 font-mono text-xs font-bold uppercase tracking-[0.14em] text-muted">Highlights</h4>
+          <ul id="modal-highlights" class="mt-2 space-y-2 text-base leading-relaxed text-muted"></ul>
+
+          <div id="modal-stack" class="mt-6 flex flex-wrap gap-2 border-t border-line pt-5"></div>
+        </div>
+      </div>
+    </dialog>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="border-t border-ink bg-ink py-10 text-white">
+    <div
+      class="mx-auto flex max-w-6xl flex-col items-center justify-between gap-6 px-5 md:flex-row md:px-8"
+    >
+      <div class="font-mono text-sm text-white/60">
+        © {year} Bhargesh Patel
+      </div>
+      <div class="flex flex-wrap justify-center gap-6 text-sm font-bold">
+        {
+          footerSocials.map((social) => (
+            <a
+              class="text-white/70 transition-colors hover:text-accent"
+              href={social?.url}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {social?.name}
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </footer>
+
+  <script is:inline>
+    // Enable JS-only reveal states (content stays visible without JS)
+    document.documentElement.classList.add('js');
+
+    // Mobile menu
+    const toggle = document.getElementById('menu-toggle');
+    const menu = document.getElementById('mobile-menu');
+    if (toggle && menu) {
+      var menuIcon = toggle.querySelector('.icon-menu');
+      var closeIcon = toggle.querySelector('.icon-close');
+      toggle.addEventListener('click', () => {
+        const open = menu.classList.toggle('hidden') === false;
+        toggle.setAttribute('aria-expanded', String(open));
+        if (menuIcon && closeIcon) {
+          menuIcon.classList.toggle('hidden', open);
+          closeIcon.classList.toggle('hidden', !open);
+        }
+      });
+      menu.querySelectorAll('a').forEach((link) =>
+        link.addEventListener('click', () => {
+          menu.classList.add('hidden');
+          toggle.setAttribute('aria-expanded', 'false');
+          if (menuIcon) menuIcon.classList.remove('hidden');
+          if (closeIcon) closeIcon.classList.add('hidden');
+        }),
+      );
+    }
+
+    // Contact form: submit to Netlify via fetch, show inline success state
+    const form = document.getElementById('contact-form');
+    if (form) {
+      form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const button = form.querySelector('button[type="submit"]');
+        const errorEl = document.getElementById('form-error');
+        const successEl = document.getElementById('form-success');
+        if (errorEl) errorEl.hidden = true;
+        const buttonHtml = button ? button.innerHTML : '';
+        if (button) {
+          button.disabled = true;
+          button.textContent = 'Sending…';
+        }
+        try {
+          const body = new URLSearchParams(new FormData(form)).toString();
+          const res = await fetch('/forms.html', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body,
+          });
+          if (!res.ok) throw new Error('Request failed: ' + res.status);
+          form.hidden = true;
+          if (successEl) {
+            successEl.hidden = false;
+            successEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+        } catch (err) {
+          if (button) {
+            button.disabled = false;
+            button.innerHTML = buttonHtml;
+          }
+          if (errorEl) errorEl.hidden = false;
+        }
+      });
+    }
+
+    // Case study modal
+    const modal = document.getElementById('case-study-modal');
+    if (modal) {
+      const caseStudies = JSON.parse(modal.getAttribute('data-projects') || '[]');
+      const titleEl = document.getElementById('modal-title');
+      const contextEl = document.getElementById('modal-context');
+      const problemEl = document.getElementById('modal-problem');
+      const roleEl = document.getElementById('modal-role');
+      const highlightsEl = document.getElementById('modal-highlights');
+      const stackEl = document.getElementById('modal-stack');
+      const closeBtn = document.getElementById('modal-close');
+
+      document.querySelectorAll('[data-project-id]').forEach((card) => {
+        const open = () => {
+          const id = Number(card.getAttribute('data-project-id'));
+          const project = caseStudies.find((p) => p.id === id);
+          if (!project || !project.details) return;
+          titleEl.textContent = project.name;
+          contextEl.textContent = project.context;
+          problemEl.textContent = project.details.problem;
+          roleEl.textContent = project.details.role;
+          highlightsEl.innerHTML = project.details.highlights
+            .map((h) => '<li class="flex gap-2"><span class="mt-1 text-accent font-bold">—</span><span>' + h + '</span></li>')
+            .join('');
+          stackEl.innerHTML = project.stack
+            .map((t) => '<span class="font-mono text-xs font-medium text-muted">#' + t + '</span>')
+            .join('');
+          document.body.style.overflow = 'hidden';
+          modal.showModal();
+        };
+        card.addEventListener('click', open);
+      });
+
+      closeBtn?.addEventListener('click', () => modal.close());
+      modal.addEventListener('click', (e) => { if (e.target === modal) modal.close(); });
+      modal.addEventListener('close', () => { document.body.style.overflow = ''; });
+    }
+
+    // Scroll reveal (enhances already-visible content)
+    const reveals = document.querySelectorAll('.reveal');
+    if ('IntersectionObserver' in window && reveals.length) {
+      const io = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('is-visible');
+              io.unobserve(entry.target);
+            }
+          });
+        },
+        { rootMargin: '0px 0px -10% 0px', threshold: 0.1 },
+      );
+      reveals.forEach((el) => io.observe(el));
+      // Safety net: reveal everything after a beat in case the observer never fires
+      window.setTimeout(() => reveals.forEach((el) => el.classList.add('is-visible')), 1500);
+    } else {
+      reveals.forEach((el) => el.classList.add('is-visible'));
+    }
+  </script>
+
+  <script is:inline>
+    // Marquee: JS-driven on touch/mobile; CSS fallback detection on desktop
+    (function () {
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+      var track = document.querySelector('.marquee-track');
+      if (!track) return;
+
+      var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+      var touchDevice =
+        window.matchMedia('(hover: none) and (pointer: coarse)').matches ||
+        (window.matchMedia('(max-width: 768px)').matches && 'ontouchstart' in window);
+      var jsActive = false;
+      var rafId = 0;
+      var offset = 0;
+      var loopWidth = 0;
+      var pixelsPerMs = 0;
+      var lastTs = 0;
+      var resizeObserver = null;
+
+      function measureLoopWidth() {
+        var group = track.querySelector('.marquee-group');
+        if (group) {
+          return group.getBoundingClientRect().width;
+        }
+        return track.scrollWidth / 2;
+      }
+
+      function applyTransform() {
+        track.style.transform = 'translate3d(' + -offset + 'px, 0, 0)';
+        track.style.webkitTransform = 'translate3d(' + -offset + 'px, 0, 0)';
+      }
+
+      function startJsMarquee() {
+        if (jsActive || reducedMotion.matches) return;
+        jsActive = true;
+        track.classList.add('marquee--js');
+        loopWidth = measureLoopWidth();
+        if (loopWidth <= 0) {
+          jsActive = false;
+          track.classList.remove('marquee--js');
+          return;
+        }
+        pixelsPerMs = loopWidth / 60000;
+        offset = 0;
+        lastTs = 0;
+        applyTransform();
+
+        function tick(ts) {
+          if (!lastTs) lastTs = ts;
+          var delta = ts - lastTs;
+          lastTs = ts;
+          offset = (offset + delta * pixelsPerMs) % loopWidth;
+          applyTransform();
+          rafId = requestAnimationFrame(tick);
+        }
+        rafId = requestAnimationFrame(tick);
+
+        if (!resizeObserver && 'ResizeObserver' in window) {
+          resizeObserver = new ResizeObserver(function () {
+            if (!jsActive) return;
+            var nextWidth = measureLoopWidth();
+            if (nextWidth > 0) loopWidth = nextWidth;
+            pixelsPerMs = loopWidth / 60000;
+          });
+          resizeObserver.observe(track);
+        }
+      }
+
+      function stopJsMarquee() {
+        if (rafId) cancelAnimationFrame(rafId);
+        rafId = 0;
+        jsActive = false;
+        track.classList.remove('marquee--js');
+        track.style.transform = '';
+        track.style.webkitTransform = '';
+      }
+
+      function isCssAnimationProgressing() {
+        if (!track.getAnimations) return Promise.resolve(false);
+        var animations = track.getAnimations();
+        if (!animations.length) return Promise.resolve(false);
+        var anim = animations[0];
+        var start = anim.currentTime;
+        return new Promise(function (resolve) {
+          window.setTimeout(function () {
+            resolve(anim.currentTime !== start && anim.currentTime !== null);
+          }, 400);
+        });
+      }
+
+      function initMarquee() {
+        if (jsActive || reducedMotion.matches) return;
+
+        // Touch/mobile: CSS marquee is unreliable on Android Chrome / Samsung —
+        // use JS from the start instead of waiting for a stalled CSS animation.
+        if (touchDevice) {
+          startJsMarquee();
+          return;
+        }
+
+        isCssAnimationProgressing().then(function (progressing) {
+          if (!progressing) startJsMarquee();
+        });
+      }
+
+      reducedMotion.addEventListener('change', function (e) {
+        if (e.matches) {
+          stopJsMarquee();
+        } else {
+          initMarquee();
+        }
+      });
+
+      document.addEventListener('visibilitychange', function () {
+        if (document.hidden) {
+          if (rafId) cancelAnimationFrame(rafId);
+          rafId = 0;
+        } else if (jsActive) {
+          lastTs = 0;
+          rafId = requestAnimationFrame(function tick(ts) {
+            if (!lastTs) lastTs = ts;
+            var delta = ts - lastTs;
+            lastTs = ts;
+            offset = (offset + delta * pixelsPerMs) % loopWidth;
+            applyTransform();
+            rafId = requestAnimationFrame(tick);
+          });
+        }
+      });
+
+      window.addEventListener('orientationchange', function () {
+        if (!jsActive) return;
+        window.setTimeout(function () {
+          loopWidth = measureLoopWidth();
+          if (loopWidth > 0) pixelsPerMs = loopWidth / 60000;
+        }, 150);
+      });
+
+      var ready = document.fonts && document.fonts.ready
+        ? document.fonts.ready
+        : Promise.resolve();
+      ready.then(function () {
+        requestAnimationFrame(function () {
+          requestAnimationFrame(initMarquee);
+        });
+      });
+    })();
+  </script>
+
+  <script is:inline>
+    // Terminal typewriter (isolated — failures here don't block other page JS)
+    (function () {
+      var termBox = document.getElementById('terminal-lines');
+      if (!termBox) return;
+
+      var lines = termBox.querySelectorAll('[data-line]');
+
+      function showAllLines() {
+        lines.forEach(function (l) {
+          l.style.visibility = 'visible';
+        });
+        termBox.style.minHeight = '';
+      }
+
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        showAllLines();
+        return;
+      }
+
+      var safetyTimer = window.setTimeout(showAllLines, 4000);
+
+      function startTypewriter() {
+        try {
+          var cursorSpan = document.createElement('span');
+          cursorSpan.className = 'term-cursor';
+          cursorSpan.textContent = '\u200B';
+
+          function getTextNodes(node) {
+            var nodes = [];
+            var walker = document.createTreeWalker(node, NodeFilter.SHOW_TEXT, null);
+            while (walker.nextNode()) nodes.push(walker.currentNode);
+            return nodes;
+          }
+
+          termBox.style.minHeight = termBox.offsetHeight + 'px';
+          lines.forEach(function (l) {
+            l.style.visibility = 'hidden';
+          });
+
+          var lineIdx = 0;
+
+          function typeLine() {
+            if (lineIdx >= lines.length) {
+              window.clearTimeout(safetyTimer);
+              termBox.style.minHeight = '';
+              return;
+            }
+            var el = lines[lineIdx];
+            el.style.visibility = 'visible';
+
+            var textNodes = getTextNodes(el);
+            var origTexts = textNodes.map(function (n) {
+              return n.textContent;
+            });
+            var totalLen = origTexts.reduce(function (s, t) {
+              return s + t.length;
+            }, 0);
+            textNodes.forEach(function (n) {
+              n.textContent = '';
+            });
+
+            var activeCursor = cursorSpan.cloneNode(true);
+            if (textNodes.length > 0) {
+              textNodes[0].parentNode.insertBefore(activeCursor, textNodes[0].nextSibling);
+            } else {
+              el.appendChild(activeCursor);
+            }
+
+            var charIdx = 0;
+            var msPerChar = el.dataset.line === 'cmd' ? 45 : 30;
+            var lastTs = 0;
+            var rafId = 0;
+
+            function tick(ts) {
+              if (!lastTs) lastTs = ts;
+              var elapsed = ts - lastTs;
+              if (elapsed >= msPerChar) {
+                var steps = Math.floor(elapsed / msPerChar);
+                charIdx = Math.min(charIdx + steps, totalLen);
+                lastTs = ts - (elapsed % msPerChar);
+
+                var remaining = charIdx;
+                for (var i = 0; i < textNodes.length; i++) {
+                  var len = origTexts[i].length;
+                  if (remaining <= len) {
+                    textNodes[i].textContent = origTexts[i].substring(0, remaining);
+                    var parent = textNodes[i].parentNode;
+                    if (activeCursor.parentNode) activeCursor.parentNode.removeChild(activeCursor);
+                    parent.insertBefore(activeCursor, textNodes[i].nextSibling);
+                    break;
+                  }
+                  textNodes[i].textContent = origTexts[i];
+                  remaining -= len;
+                }
+              }
+
+              if (charIdx >= totalLen) {
+                if (activeCursor.parentNode) activeCursor.parentNode.removeChild(activeCursor);
+                lineIdx++;
+                window.setTimeout(typeLine, el.dataset.line === 'cmd' ? 350 : 180);
+                return;
+              }
+              rafId = requestAnimationFrame(tick);
+            }
+            rafId = requestAnimationFrame(tick);
+          }
+
+          window.setTimeout(typeLine, 600);
+        } catch (err) {
+          showAllLines();
+        }
+      }
+
+      var ready = document.fonts && document.fonts.ready
+        ? document.fonts.ready
+        : Promise.resolve();
+      ready.then(startTypewriter).catch(showAllLines);
+    })();
+  </script>
+</BaseLayout>

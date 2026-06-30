@@ -1,0 +1,259 @@
+@import "tailwindcss";
+
+@font-face {
+  font-family: "Archivo";
+  font-style: normal;
+  font-display: optional;
+  font-weight: 100 900;
+  src: url("/fonts/archivo-latin-wght-normal.woff2") format("woff2-variations");
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+
+@font-face {
+  font-family: "JetBrains Mono";
+  font-style: normal;
+  font-display: optional;
+  font-weight: 100 800;
+  src: url("/fonts/jetbrains-mono-latin-wght-normal.woff2") format("woff2-variations");
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+
+@theme {
+  /* Refined engineering palette: near-black ink, clean paper, safety-yellow signature */
+  --color-ink: #0a0a0a;
+  --color-paper: #ffffff;
+  --color-surface: #f5f5f4;
+  --color-muted: #525257;
+  --color-line: #e4e4e4;
+  --color-accent: #ffe600;
+  --color-accent-ink: #0a0a0a;
+
+  /* Backward-compatible aliases */
+  --color-primary: #0a0a0a;
+  --color-warning: #ffe600;
+
+  --border-width-brutal: 3px;
+  --border-width-heavy: 6px;
+
+  --font-sans: "Archivo", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", monospace;
+  --font-display: "Archivo", ui-sans-serif, system-ui, sans-serif;
+  --font-headline: "Archivo", ui-sans-serif, system-ui, sans-serif;
+  --font-body: "Archivo", ui-sans-serif, system-ui, sans-serif;
+
+  --ease-out-quint: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-paper);
+  color: var(--color-ink);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* ---- One brutalist signature: the offset hard shadow ---- */
+.brutal-border {
+  border: 3px solid var(--color-ink);
+}
+
+.brutal-shadow {
+  box-shadow: 6px 6px 0 0 var(--color-ink);
+}
+
+.brutal-shadow-accent {
+  box-shadow: 6px 6px 0 0 var(--color-accent);
+}
+
+.shadow-press {
+  transition:
+    transform 0.18s var(--ease-out-quint),
+    box-shadow 0.18s var(--ease-out-quint);
+}
+
+.shadow-press:hover {
+  transform: translate(2px, 2px);
+  box-shadow: 3px 3px 0 0 var(--color-ink);
+}
+
+.shadow-press-accent:hover {
+  box-shadow: 3px 3px 0 0 var(--color-accent);
+}
+
+/* Highlight mark: yellow fill behind black text (passes contrast) */
+.mark {
+  background-color: var(--color-accent);
+  color: var(--color-ink);
+  padding: 0 0.18em;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+
+/* ---- Marquee band ---- */
+.marquee {
+  overflow: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+.marquee-track {
+  display: flex;
+  flex-wrap: nowrap;
+  width: max-content;
+  will-change: transform;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.marquee-group {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .marquee-track {
+    animation: marquee 60s linear infinite;
+  }
+
+  .marquee-track.marquee--js {
+    animation: none;
+  }
+}
+
+/* Uniform spacing via item margins (no gap/padding) so the loop seam
+   matches the internal rhythm exactly — seamless, continuous scroll. */
+.marquee-item {
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  line-height: 1;
+  text-transform: uppercase;
+  white-space: nowrap;
+  flex-shrink: 0;
+  margin: 0 1.25rem;
+}
+
+.marquee-sep {
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  line-height: 1;
+  white-space: nowrap;
+  flex-shrink: 0;
+  color: var(--color-accent);
+}
+
+@keyframes marquee {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+/* ---- Scroll reveal: enhances an already-visible default ----
+   Content is visible by default. The hidden start state only applies
+   when JS is active (html.js), so no-JS and headless renders never ship blank. */
+.js .reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition:
+    opacity 0.6s var(--ease-out-quint),
+    transform 0.6s var(--ease-out-quint);
+}
+
+.js .reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ---- Case study dialog ---- */
+dialog#case-study-modal {
+  border: none;
+  padding: 0;
+  background: transparent;
+}
+
+dialog#case-study-modal::backdrop {
+  background: rgba(10, 10, 10, 0.7);
+  backdrop-filter: blur(4px);
+}
+
+dialog#case-study-modal[open] {
+  animation: modal-in 0.25s var(--ease-out-quint);
+}
+
+/* ---- Terminal typewriter cursor ---- */
+.term-cursor {
+  display: inline-block;
+  width: 0.55em;
+  height: 1.1em;
+  background: currentColor;
+  vertical-align: text-bottom;
+  margin-left: 1px;
+  animation: blink 1s step-end infinite;
+}
+
+.term-prompt-cursor {
+  animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+  50% { opacity: 0; }
+}
+
+@keyframes modal-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+:where(a, button, input, textarea):focus-visible {
+  outline: 3px solid var(--color-ink);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .marquee-track {
+    animation: none;
+    transform: none;
+  }
+
+  /* Show one static copy of the band when motion is reduced */
+  .marquee-group[aria-hidden='true'] {
+    display: none;
+  }
+
+  .term-cursor,
+  .term-prompt-cursor {
+    animation: none;
+  }
+
+  .js .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .shadow-press:hover {
+    transform: none;
+  }
+
+  dialog#case-study-modal[open] {
+    animation: none;
+  }
+}
