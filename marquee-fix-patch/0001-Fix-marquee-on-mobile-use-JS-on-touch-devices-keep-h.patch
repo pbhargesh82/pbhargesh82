@@ -1,0 +1,273 @@
+From 6705aad8f0a43ba7f203804a7afc6e2622cfedae Mon Sep 17 00:00:00 2001
+From: Cursor Agent <cursoragent@cursor.com>
+Date: Tue, 30 Jun 2026 04:59:50 +0000
+Subject: [PATCH] Fix marquee on mobile: use JS on touch devices, keep
+ horizontal layout
+
+The previous fix relied on CSS animation with a delayed JS fallback that
+checked bounding-rect movement after 1s. On Samsung Galaxy and other
+Android Chrome browsers this failed because:
+- CSS transform animations are unreliable on mobile WebKit/Blink
+- The reduced-motion fallback wrapped items into a vertical badge stack
+  (matching the broken layout users reported on Galaxy S24)
+
+Changes:
+- Always apply horizontal nowrap layout in base CSS, independent of motion prefs
+- Simplify reduced-motion fallback to a static horizontal strip (no vertical wrap)
+- Start JS-driven marquee immediately on touch/coarse-pointer devices
+- Use Web Animations API for desktop stall detection instead of rect polling
+- Re-measure loop width on resize and orientation change
+---
+ src/pages/index.astro | 121 +++++++++++++++++++++++++++++++++++-------
+ src/styles/global.css |  35 +++---------
+ 2 files changed, 109 insertions(+), 47 deletions(-)
+
+diff --git a/src/pages/index.astro b/src/pages/index.astro
+index 37230fe..976243d 100644
+--- a/src/pages/index.astro
++++ b/src/pages/index.astro
+@@ -777,7 +777,7 @@ const footerSocials = [github, linkedin, dailyDev, whatsapp].filter(Boolean);
+   </script>
+ 
+   <script is:inline>
+-    // Marquee: rAF fallback when CSS animation stalls (skipped under reduced motion)
++    // Marquee: JS-driven on touch/mobile; CSS fallback detection on desktop
+     (function () {
+       if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+ 
+@@ -785,59 +785,142 @@ const footerSocials = [github, linkedin, dailyDev, whatsapp].filter(Boolean);
+       if (!track) return;
+ 
+       var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
++      var touchDevice =
++        window.matchMedia('(hover: none) and (pointer: coarse)').matches ||
++        (window.matchMedia('(max-width: 768px)').matches && 'ontouchstart' in window);
+       var jsActive = false;
+       var rafId = 0;
+       var offset = 0;
+-      var halfWidth = 0;
++      var loopWidth = 0;
+       var pixelsPerMs = 0;
+       var lastTs = 0;
++      var resizeObserver = null;
++
++      function measureLoopWidth() {
++        var group = track.querySelector('.marquee-group');
++        if (group) {
++          return group.getBoundingClientRect().width;
++        }
++        return track.scrollWidth / 2;
++      }
++
++      function applyTransform() {
++        track.style.transform = 'translate3d(' + -offset + 'px, 0, 0)';
++        track.style.webkitTransform = 'translate3d(' + -offset + 'px, 0, 0)';
++      }
+ 
+       function startJsMarquee() {
+-        if (jsActive) return;
++        if (jsActive || reducedMotion.matches) return;
+         jsActive = true;
+         track.classList.add('marquee--js');
+-        halfWidth = track.scrollWidth / 2;
+-        if (halfWidth <= 0) return;
+-        pixelsPerMs = halfWidth / 60000;
++        loopWidth = measureLoopWidth();
++        if (loopWidth <= 0) {
++          jsActive = false;
++          track.classList.remove('marquee--js');
++          return;
++        }
++        pixelsPerMs = loopWidth / 60000;
+         offset = 0;
+         lastTs = 0;
++        applyTransform();
+ 
+         function tick(ts) {
+           if (!lastTs) lastTs = ts;
+           var delta = ts - lastTs;
+           lastTs = ts;
+-          offset = (offset + delta * pixelsPerMs) % halfWidth;
+-          track.style.transform = 'translate3d(' + -offset + 'px, 0, 0)';
++          offset = (offset + delta * pixelsPerMs) % loopWidth;
++          applyTransform();
+           rafId = requestAnimationFrame(tick);
+         }
+         rafId = requestAnimationFrame(tick);
++
++        if (!resizeObserver && 'ResizeObserver' in window) {
++          resizeObserver = new ResizeObserver(function () {
++            if (!jsActive) return;
++            var nextWidth = measureLoopWidth();
++            if (nextWidth > 0) loopWidth = nextWidth;
++            pixelsPerMs = loopWidth / 60000;
++          });
++          resizeObserver.observe(track);
++        }
++      }
++
++      function stopJsMarquee() {
++        if (rafId) cancelAnimationFrame(rafId);
++        rafId = 0;
++        jsActive = false;
++        track.classList.remove('marquee--js');
++        track.style.transform = '';
++        track.style.webkitTransform = '';
++      }
++
++      function isCssAnimationProgressing() {
++        if (!track.getAnimations) return Promise.resolve(false);
++        var animations = track.getAnimations();
++        if (!animations.length) return Promise.resolve(false);
++        var anim = animations[0];
++        var start = anim.currentTime;
++        return new Promise(function (resolve) {
++          window.setTimeout(function () {
++            resolve(anim.currentTime !== start && anim.currentTime !== null);
++          }, 400);
++        });
+       }
+ 
+-      function checkAnimation() {
++      function initMarquee() {
+         if (jsActive || reducedMotion.matches) return;
+-        var pos1 = track.getBoundingClientRect().left;
+-        window.setTimeout(function () {
+-          if (jsActive || reducedMotion.matches) return;
+-          var pos2 = track.getBoundingClientRect().left;
+-          if (Math.abs(pos2 - pos1) < 0.5) startJsMarquee();
+-        }, 1000);
++
++        // Touch/mobile: CSS marquee is unreliable on Android Chrome / Samsung —
++        // use JS from the start instead of waiting for a stalled CSS animation.
++        if (touchDevice) {
++          startJsMarquee();
++          return;
++        }
++
++        isCssAnimationProgressing().then(function (progressing) {
++          if (!progressing) startJsMarquee();
++        });
+       }
+ 
+       reducedMotion.addEventListener('change', function (e) {
+         if (e.matches) {
++          stopJsMarquee();
++        } else {
++          initMarquee();
++        }
++      });
++
++      document.addEventListener('visibilitychange', function () {
++        if (document.hidden) {
+           if (rafId) cancelAnimationFrame(rafId);
+-          jsActive = false;
+-          track.classList.remove('marquee--js');
+-          track.style.transform = '';
++          rafId = 0;
++        } else if (jsActive) {
++          lastTs = 0;
++          rafId = requestAnimationFrame(function tick(ts) {
++            if (!lastTs) lastTs = ts;
++            var delta = ts - lastTs;
++            lastTs = ts;
++            offset = (offset + delta * pixelsPerMs) % loopWidth;
++            applyTransform();
++            rafId = requestAnimationFrame(tick);
++          });
+         }
+       });
+ 
++      window.addEventListener('orientationchange', function () {
++        if (!jsActive) return;
++        window.setTimeout(function () {
++          loopWidth = measureLoopWidth();
++          if (loopWidth > 0) pixelsPerMs = loopWidth / 60000;
++        }, 150);
++      });
++
+       var ready = document.fonts && document.fonts.ready
+         ? document.fonts.ready
+         : Promise.resolve();
+       ready.then(function () {
+         requestAnimationFrame(function () {
+-          requestAnimationFrame(checkAnimation);
++          requestAnimationFrame(initMarquee);
+         });
+       });
+     })();
+diff --git a/src/styles/global.css b/src/styles/global.css
+index 5518e0a..28fc6a0 100644
+--- a/src/styles/global.css
++++ b/src/styles/global.css
+@@ -96,10 +96,16 @@ body {
+ /* ---- Marquee band ---- */
+ .marquee {
+   overflow: hidden;
++  -webkit-overflow-scrolling: touch;
+ }
+ 
+ .marquee-track {
+   display: flex;
++  flex-wrap: nowrap;
++  width: max-content;
++  will-change: transform;
++  backface-visibility: hidden;
++  -webkit-backface-visibility: hidden;
+ }
+ 
+ .marquee-group {
+@@ -110,11 +116,7 @@ body {
+ 
+ @media (prefers-reduced-motion: no-preference) {
+   .marquee-track {
+-    flex-wrap: nowrap;
+-    width: max-content;
+     animation: marquee 60s linear infinite;
+-    backface-visibility: hidden;
+-    -webkit-backface-visibility: hidden;
+   }
+ 
+   .marquee-track.marquee--js {
+@@ -228,19 +230,7 @@ dialog#case-study-modal[open] {
+ 
+   .marquee-track {
+     animation: none;
+-    flex-wrap: wrap;
+-    width: 100%;
+-    justify-content: center;
+-    gap: 0.5rem 1rem;
+-    padding: 0.25rem 1rem;
+-  }
+-
+-  .marquee-group {
+-    display: flex;
+-    flex-wrap: wrap;
+-    justify-content: center;
+-    gap: 0.5rem 1rem;
+-    flex-shrink: 1;
++    transform: none;
+   }
+ 
+   /* Show one static copy of the band when motion is reduced */
+@@ -248,17 +238,6 @@ dialog#case-study-modal[open] {
+     display: none;
+   }
+ 
+-  .marquee-item {
+-    margin: 0;
+-    padding: 0.25rem 0.75rem;
+-    border: 1px solid rgba(255, 255, 255, 0.2);
+-    border-radius: 2px;
+-  }
+-
+-  .marquee-sep {
+-    display: none;
+-  }
+-
+   .term-cursor,
+   .term-prompt-cursor {
+     animation: none;
+-- 
+2.43.0
+
